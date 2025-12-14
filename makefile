@@ -71,7 +71,7 @@ setup:
 	@cp udev/$(PROGN).rules $(DESTDIR)/etc/udev/rules.d
 	@test -s /usr/bin/systemd-run && \
 		install -m 755 -d $(DESTDIR)$(SYSTEMDDIR)/system && \
-		cp systemd/$(PROGN)-reboot.service $(DESTDIR)$(SYSTEMDDIR)/system
+		cp systemd/$(PROGN).service $(DESTDIR)$(SYSTEMDDIR)/system
 
 install-lib: lib
 	@install -m 755 -d $(libdir)
@@ -83,15 +83,15 @@ install-dev: install-lib
 	@install -m 644 src/classes/*.h $(includedir)/$(PROGN)
 
 install: setup
-	@test -s /etc/$(PROGN)/profile || \
-		cp /etc/$(PROGN)/samples/group_keys /etc/$(PROGN)/profile
+	@test -s $(DESTDIR)/etc/$(PROGN)/profile || \
+		cp $(DESTDIR)/etc/$(PROGN)/samples/all_white $(DESTDIR)/etc/$(PROGN)/profile
 	@test -s /etc/$(PROGN)/reboot || \
-		cp /etc/$(PROGN)/samples/all_off /etc/$(PROGN)/reboot
+		cp $(DESTDIR)/etc/$(PROGN)/samples/all_off $(DESTDIR)/etc/$(PROGN)/reboot
 	@udevadm control --reload-rules
-	@$(PROGN) -p /etc/$(PROGN)/profile
+	@$(PROGN) -p $(DESTDIR)/etc/$(PROGN)/profile
 	@test -s /usr/bin/systemd-run && \
 		systemctl daemon-reload && \
-		systemctl enable $(PROGN)-reboot
+		systemctl enable $(PROGN).service
 
 uninstall-lib:
 	@rm -f $(libdir)/lib$(PROGN).so*
@@ -101,8 +101,8 @@ uninstall-dev:
 
 uninstall:
 	@test -s /usr/bin/systemd-run && \
-		systemctl disable $(PROGN)-reboot && \
-		rm $(SYSTEMDDIR)/system/$(PROGN)-reboot.service && \
+		systemctl disable $(PROGN).service && \
+		rm $(SYSTEMDDIR)/system/$(PROGN).service && \
 		systemctl daemon-reload && \
 		rm -R /etc/$(PROGN)
 	
