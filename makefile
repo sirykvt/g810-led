@@ -87,6 +87,7 @@ install: setup
 		cp $(DESTDIR)/etc/$(PROGN)/samples/all_white $(DESTDIR)/etc/$(PROGN)/profile
 	@test -s /etc/$(PROGN)/reboot || \
 		cp $(DESTDIR)/etc/$(PROGN)/samples/all_off $(DESTDIR)/etc/$(PROGN)/reboot
+	@udevadm control --reload-rules
 	@$(PROGN) -p $(DESTDIR)/etc/$(PROGN)/profile
 	@test -s /usr/bin/systemd-run && \
 		systemctl daemon-reload && \
@@ -117,3 +118,4 @@ uninstall:
 	@rm /usr/bin/$(PROGN)
 	
 	@rm /etc/udev/rules.d/$(PROGN).rules
+	@udevadm control --reload-rules
